@@ -6,3 +6,5 @@
  3. cd src/main/docker
  4. docker build -t my-local-repo/myservice:latest .
  5. docker-compose up
+ 6. navigate to http://localhost:8082/swagger-ui/index.html API documentation
+ 7. please navigate to the folder screen-shot-guide for more clarity
