@@ -5,7 +5,9 @@ import com.example.simplelibrarysystem.model.BookBorrowing;
 import com.example.simplelibrarysystem.model.BookStatus;
 import com.example.simplelibrarysystem.service.BookBorrowingService;
 import com.example.simplelibrarysystem.service.BookService;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -32,9 +34,14 @@ public class BorrowingController {
         if(book.isPresent()){
             Book bk = book.get();
         bk.setId(bookDetails.getBookId());
-        bk.setStatus(BookStatus.BORROWED);
+        if(bk.getStatus()==BookStatus.BORROWED){
+            throw new RuntimeException("Book is already borrowed!");
+        }else{
+            bk.setStatus(BookStatus.BORROWED);
 
-        bookService.updateBook(bk);
+            bookService.updateBook(bk);
+        }
+
         }
         return bookBorrowing;
     }
@@ -56,5 +63,12 @@ public class BorrowingController {
         }
 
         return bookBorrowing;
+    }
+
+    @ExceptionHandler({ RuntimeException.class })
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorMessage handleException(){
+        ErrorMessage message = new ErrorMessage("Please re-check user inputs!");
+        return message;
     }
 }
